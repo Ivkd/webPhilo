@@ -1,0 +1,749 @@
+* {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;     /* IE 10+ */
+    user-select: none;         /* Стандарт */
+    cursor: none !important;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.image-zoom-container {
+    overflow: hidden;
+    cursor: grab;
+    position: relative;
+    width: 100%;
+    background: #000;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.image-zoom-container img {
+    transition: transform 0.1s ease-out; /* небольшая инерция для зума */
+    transform-origin: center;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;     /* IE 10+ */
+    user-select: none;
+    pointer-events: none; /* чтобы не мешать drag-событиям контейнера */
+}
+
+.image-zoom-container:active {
+    cursor: grabbing;
+}
+
+:root {
+    --bg-color: #050507;
+    --accent-color: #00f2ff;
+    --text-color: #e0e0e0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    cursor: none !important;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+body.details-open #world {
+    transform: translateY(-100px); 
+}
+
+
+body.details-open-full #world {
+    transform: translateY(-30vh);
+}
+
+#world {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    will-change: transform;
+    transition: transform 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+body.details-open-full nav {
+    transform: translateY(-60vh);
+    transition: transform 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+nav {
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: clamp(1rem, 3vh, 2.5rem) 5%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.logo {
+    font-weight: 700;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: clamp(0.8rem, 1.5vw, 2rem);
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: clamp(0.6rem, 0.8vw, 0.85rem);
+    letter-spacing: 1.5px;
+    opacity: 0.5;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.nav-links a.active {
+    opacity: 1;
+    color: var(--accent-color);
+}
+
+#app {
+    position: relative;
+    z-index: 10;
+    height: 100vh;
+    pointer-events: none;
+}
+
+#custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-size: 40px;
+    pointer-events: none !important;
+    z-index: 9999;
+    will-change: transform;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+ul {
+    /* Отступ всего блока списка от левого края */
+    padding-left: 40px; 
+    margin-bottom: 30px;
+}
+
+li {
+    margin-top: 12px;
+    /* Расстояние между текстом и самой точкой (маркером) */
+    padding-left: 15px; 
+    /* Расстояние между самими пунктами, чтобы не слиплись */
+    margin-bottom: 1px; 
+    line-height: 1.6;
+}
+
+
+
+.sliding-page {
+    position: fixed;
+    left: 0;
+    height: auto; /* Высота самой полосы */
+    top: 100vh; /* Спрятана глубоко внизу */
+    width: 100%;
+    background: #fff;
+    color: #000;
+    z-index: 500;
+    padding: 0;
+    overflow-y: visible !important;
+    min-height: 100vh;
+    pointer-events: all;
+    transition: transform 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.sliding-page.open {
+    transform: translateY(-100px); /* Выезжает вверх на свою высоту (или чуть меньше) */
+}
+
+.page-spacer {
+    height: 100px; /* Должен совпадать с высотой вылета выше */
+}
+
+.page-container {
+    display: flex;
+    gap: 80px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    height: auto;
+    padding-bottom: 200px; 
+    z-index: 2;
+    position: relative;
+    padding-left: 60px; /* Чтобы было место для вертикальной цифры */
+}
+
+
+.page-label {
+    position: absolute;
+    left: 15px; /* Смещаем, чтобы цифра была рядом с линией */
+    top: 0;
+    z-index: 6;
+    opacity: 0;
+    
+    /* Оформление текста */
+    font-family: 'Your-Mono-Font', monospace;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #bbb;
+    
+    /* Вертикальный текст */
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg) translateX(15px); /* Начальный сдвиг для анимации */
+}
+.page-body {
+    width: 100%;
+    max-width: 1200px; /* Чтобы текст не растягивался слишком широко на мониторах */
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.page-body h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 1.5rem;
+}
+
+.page-body p, .page-body ul, .page-body li {
+    font-size: clamp(1rem, 1.5vw, 1.2rem); /* Адаптивный размер шрифта */
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: rgba(0, 0, 0, 0.9);
+    z-index: 2;
+}
+
+.page-line {
+    position: absolute;
+    left: 45px; 
+    top: 0;
+    width: 1px;
+    height: 100%;
+    height: 100%; /* Или фиксированная высота */
+    background: #e0e0e0;
+    z-index: 10;
+    transform: scaleY(0); /* Скрыта по умолчанию */
+    transform-origin: top;
+}
+
+.accent-block {
+    background: rgba(0, 255, 255, 0.05);
+    border-left: 4px solid #00ffff;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    border-radius: 4px;
+}
+
+.page-title, 
+.page-body p, 
+.page-body h3, 
+.page-body li, 
+.accent-block {
+    opacity: 0;
+    transform: translateY(30px); /* Уменьшил до 30px, 120px — слишком резкий скачок */
+    transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+/* Состояние видимости */
+.page-title.is-visible,
+.page-body p.is-visible,
+.page-body h3.is-visible,
+.page-body li.is-visible,
+.accent-block.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.close-btn-fixed {
+    position: fixed; /* Относительно панели */
+    top: 20px;
+    left: 90%;
+    z-index: 600;
+    background: #000;
+    color: #fff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+/* .close-btn {
+    display: block;
+    margin: 40px auto 0;
+    padding: 15px 35px;
+    background: #000;
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    letter-spacing: 2px;
+    transition: 0.3s;
+} */
+
+.close-btn-fixed:hover {
+    background: var(--accent-color);
+    color: #000;
+}
+
+.sliding-page::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sliding-page::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.sliding-page::-webkit-scrollbar-thumb {
+    background: #000;
+}
+
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    #custom-cursor {
+        display: none !important;
+    }
+
+    .sliding-page {
+        height: 78vh;
+        padding: 24px 20px;
+    }
+
+    .page-container {
+        flex-direction: column;
+        position: relative;
+        gap: 24px;
+    }
+
+    .page-label {
+        writing-mode: horizontal-tb;
+        transform: none;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding: 0 0 12px 0;
+    }
+
+    .page-body {
+        font-size: 1rem;
+    }
+}
+
+#wave-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* Он растянется на всю высоту контента */
+    min-height: 100vh;
+    z-index: 1; 
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#wave-container canvas {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+}
+
+.hint-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    
+    /* КРИТИЧНО: разрешаем клики по оверлею, чтобы сработал сброс */
+    pointer-events: all; 
+    cursor: none; /* Показываем, что на подсказку можно нажать */
+    
+    transition: opacity 1s ease, visibility 1s;
+}
+
+.hint-overlay.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; 
+}
+
+.hint-content {
+    display: flex;
+    align-items: center;
+    width: 80%; /* Общая ширина всей конструкции */
+    max-width: 900px;
+}
+
+.hint-sphere {
+    width: 24px;
+    height: 24px;
+    background: #00f2ff;
+    border-radius: 50%;
+    box-shadow: 0 0 25px #00f2ff;
+    flex-shrink: 0;
+    
+    /* Анимация появления шарика */
+    transform: scale(0);
+    animation: spherePop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+               spherePulse 2s infinite ease-in-out 0.8s;
+}
+
+@keyframes spherePop {
+    to { transform: scale(1); }
+}
+
+.hint-side {
+    flex: 1; /* Растягивает левую и правую части поровну */
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+/* Линии */
+.hint-line {
+    height: 1px;
+    flex: 1; /* Теперь они сразу занимают все место, но... */
+    background: #00f2ff;
+    
+    /* ...но мы их сжимаем в 0 по горизонтали */
+    transform: scaleX(0); 
+    
+    /* Анимируем только масштаб */
+    animation: lineGrow 1.5s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+    animation-delay: 0.2s;
+}
+
+@keyframes lineGrow {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
+
+.left .hint-line {
+    background: linear-gradient(to left, #00f2ff, transparent);
+    /* Точка опоры справа — растет влево */
+    transform-origin: right center; 
+}
+
+.right .hint-line {
+    background: linear-gradient(to right, #00f2ff, transparent);
+    /* Точка опоры слева — растет вправо */
+    transform-origin: left center; 
+}
+
+.hint-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: #00f2ff;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0; /* Изначально скрыт */
+}
+
+/* Настройки для ЛЕВОГО текста (выплывает ВВЕРХ) */
+.left .hint-text {
+    animation: textFadeUp 1s ease forwards;
+    animation-delay: 1.5s;
+    bottom: 25px; /* Позиция выше линии */
+}
+
+/* Настройки для ПРАВОГО текста (выплывает ВНИЗ) */
+.right .hint-text {
+    animation: textFadeDown 1s ease forwards;
+    animation-delay: 1.5s;
+    top: 25px; /* Позиция ниже линии */
+}
+
+/* Анимация ВВЕРХ (от линии к небу) */
+@keyframes textFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px); /* Начинает чуть ниже своей позиции */
+    }
+    to {
+        opacity: 0.8;
+        transform: translateY(0);
+    }
+}
+
+/* Анимация ВНИЗ (от линии к полу) */
+@keyframes textFadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); /* Начинает чуть выше своей позиции */
+    }
+    to {
+        opacity: 0.8;
+        transform: translateY(0);
+    }
+}
+
+.hint-text span {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 5px;
+    animation: arrowJump 1.5s infinite;
+}
+
+@keyframes spherePulse {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 40px #00f2ff; }
+}
+
+@keyframes arrowJump {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.hint-overlay.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.hint-overlay::after {
+    content: "КЛИКНИТЕ, ЧТОБЫ ПРОПУСТИТЬ";
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #00f2ff;
+    font-size: 9px;
+    letter-spacing: 3px;
+    opacity: 0.4;
+}
+
+.site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 40px;
+    z-index: 500; /* Ниже подсказки, но выше 3D сцены */
+    pointer-events: none; /* Чтобы не мешал кликам по сцене */
+}
+
+/* Верхняя разделительная линия */
+.footer-line {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #00f2ff, transparent);
+    opacity: 0.3;
+    margin-bottom: 15px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-family: 'Orbitron', sans-serif; /* Или любой твой футуристичный шрифт */
+}
+
+.footer-left, .footer-right {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-right {
+    text-align: right;
+}
+
+/* Мелкие подписи (DESIGNED BY и год) */
+.label {
+    font-size: 8px;
+    color: #00f2ff;
+    letter-spacing: 3px;
+    opacity: 0.5;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+/* Основной текст (Фамилия и ПГУ) */
+.value {
+    font-size: 11px;
+    color: #00f2ff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+    opacity: 0.8;
+}
+
+/* Анимация появления футера вместе с интерфейсом */
+.site-footer {
+    opacity: 0;
+    animation: footerFadeIn 1s ease forwards;
+    animation-delay: 2s; /* Появляется после того, как линии подсказки разошлись */
+}
+
+@keyframes footerFadeIn {
+    to { opacity: 1; }
+}
+
+
+/* Контейнер-превью внутри статьи */
+.image-container {
+    position: relative;
+    height: auto;    /* Фиксированная высота окошка */
+    max-width: 600px; /* Ширина превью в тексте */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    cursor: pointer;
+    background: transparent;
+    display: block;
+}
+
+/* .image-container img.map-preview {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover; 
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0.8;
+} */
+
+.image-container:hover {
+    transform: scale(1.05); 
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    border-color: #00f2ff;
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Чтобы картинка не обрезалась в превью */
+    transition: opacity 0.3s ease;
+}
+
+
+/* Основной контейнер оверлея — ВСЕГДА на весь экран */
+.map-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%; /* На всю ширину окна */
+    height: 100%; /* На всю высоту окна */
+    
+    background: transparent;
+    z-index: 2001;
+    display: none; /* Включается через JS .active { display: flex } */
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.map-overlay.active {
+    display: flex; /* Используем flex для центрирования содержимого */
+}
+
+/* Фон теперь точно будет на весь экран */
+.map-overlay-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: -1; /* Чтобы быть под картинкой */
+}
+
+/* Контейнер для картинки и кнопки */
+.zoom-area {
+    position: relative; /* Чтобы кнопка позиционировалась относительно этого блока */
+    width: 80%;  /* Ограничиваем область видимости */
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* Чтобы клики проходили сквозь контейнер на фон (для закрытия) */
+}
+
+#overlay-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* transform задается в JS через calc(-50% + posX), поэтому здесь только база */
+    cursor: grab;
+    pointer-events: auto; /* Возвращаем клики картинке */
+    max-width: none;
+}
+
+/* Кнопка закрытия */
+.inner-map-close {
+    position: fixed; /* Фиксируем в углу экрана, а не картинки */
+    top: 20px;
+    right: 20px;
+    z-index: 2002;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    font-size: 35px;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+    pointer-events: auto;
+}
+
+.inner-map-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.click-hint {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 4px 8px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    pointer-events: none;
+    border: 1px solid var(--accent-color, #00ff00);
+}
